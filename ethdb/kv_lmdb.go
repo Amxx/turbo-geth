@@ -222,7 +222,6 @@ func (db *LmdbKV) Begin(ctx context.Context, writable bool) (Tx, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	tx.RawRead = true
 	return &lmdbTx{
 		db:  db,
