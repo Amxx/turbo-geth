@@ -730,7 +730,7 @@ func (c *LmdbCursor) putDupSort(key []byte, value []byte) error {
 	}
 
 	if len(key) != b.dupFrom {
-		_, _, err := c.setExact(key)
+		_, err := c.SeekExact(key)
 		if err != nil {
 			if lmdb.IsNotFound(err) {
 				return c.put(key, value)
@@ -767,9 +767,17 @@ func (c *LmdbCursor) putDupSort(key []byte, value []byte) error {
 	return c.put(key, newValue)
 }
 
-func (c *LmdbCursor) setExact(key []byte) ([]byte, []byte, error) {
-	return c.cursor.Get(key, nil, lmdb.Set)
+func (c *LmdbCursor) SeekExact(key []byte) ([]byte, error) {
+	_, v, err := c.cursor.Get(key, nil, lmdb.Set)
+	if err != nil {
+		if lmdb.IsNotFound(err) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return v, nil
 }
+
 func (c *LmdbCursor) setRange(key []byte) ([]byte, []byte, error) {
 	return c.cursor.Get(key, nil, lmdb.SetRange)
 }
