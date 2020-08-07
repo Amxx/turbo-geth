@@ -75,7 +75,8 @@ type Database interface {
 	// bucket0, key0, val0, bucket1, key1, val1, ...
 	MultiPut(tuples ...[]byte) (uint64, error)
 	Close()
-	NewBatch() DbWithPendingMutations
+	NewBatch() DbWithPendingMutations       // starts in-mem batch
+	Begin() (DbWithPendingMutations, error) // starts db transaction
 
 	// IdealBatchSize defines the size of the data batches should ideally add in one write.
 	IdealBatchSize() int
@@ -86,8 +87,6 @@ type Database interface {
 	// FIXME: implement support if needed
 	Ancients() (uint64, error)
 	TruncateAncients(items uint64) error
-
-	ID() uint64
 }
 
 // MinDatabase is a minimalistic version of the Database interface.
